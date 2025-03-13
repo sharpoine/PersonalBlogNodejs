@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createPost, getPosts, getPost } = require('../controllers/postController');
+const { createPost, getPosts, getPost,uploadImage } = require('../controllers/postController');
 const multer = require('multer');
 const path = require('path');
 
@@ -33,6 +33,8 @@ const upload = multer({
 router.route('/')
   .post(upload.single('image'), createPost)
   .get(getPosts)
+router.post('/upload-image', upload.single('image'),uploadImage)
+router.get('/:slug', getPost)
 
 
 
