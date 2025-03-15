@@ -3,6 +3,7 @@ const router = express.Router();
 const { createPost, getPosts, getPost,uploadImage } = require('../controllers/postController');
 const multer = require('multer');
 const path = require('path');
+const protect = require('../middleware/authMiddleware');
 
 // Yükleme dosyalarının nereye kaydedileceğini ve dosya adını ayarlıyoruz
 const storage = multer.diskStorage({
@@ -31,9 +32,9 @@ const upload = multer({
 });
 
 router.route('/')
-  .post(upload.single('image'), createPost)
+  .post(upload.single('image'),protect, createPost)
   .get(getPosts)
-router.post('/upload-image', upload.single('image'),uploadImage)
+router.post('/upload-image', upload.single('image'),protect,uploadImage)
 router.get('/:slug', getPost)
 
 

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const morgan = require('morgan');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
+
 const path = require('path');
 
 const app = express();
@@ -17,6 +18,9 @@ app.use(cors({
 app.use(cookieParser())
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // MongoDB bağlantısı
+
+
+//ayrı dosyaya taşınacak
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB bağlantısı başarılı'))
     .catch(err => console.log(err));
@@ -33,7 +37,10 @@ app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda çalışıyor`);
 });
 
-
+/*errorHandler middleware ekle
+authMiddleware(JWT)?
+helmet vs yüklenecek
+*/
 
 
 

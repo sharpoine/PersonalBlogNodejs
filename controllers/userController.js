@@ -30,12 +30,13 @@ const authUser = async (req, res) => {
     if (user && (await user.matchPassword(password))) {
         res.cookie('token', generateToken(user._id), {
             httpOnly: true,
+            sameSite: 'Strict',
             maxAge: 360000,
         })
-        res.cookie('id', user._id, {
+        /*res.cookie('id', user._id, {
             httpOnly: true,
             maxAge: 360000,
-        })
+        })*/
         res.json({
             _id: user._id,
             username: user.username,
@@ -47,5 +48,8 @@ const authUser = async (req, res) => {
         res.status(401).json({ message: 'Invalid email or password' });
     }
 };
+const checkUser = async (req, res) => {
+    res.json({ user: req.user.id })
+}
 
-module.exports = { registerUser, authUser };
+module.exports = { registerUser, authUser, checkUser };
