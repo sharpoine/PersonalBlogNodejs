@@ -1,3 +1,4 @@
+const Category = require('../models/Category');
 const Post = require('../models/Post');
 const jwt = require('jsonwebtoken')
 
@@ -28,10 +29,11 @@ const createPost = async (req, res) => {
     }
 
     try {
-        const { content, header } = req.body;
+        const { content, header, category } = req.body;
         const post = new Post({
             header,
             content,
+            category,
             user: id,
             image: `/uploads/${req.file.filename}`
         });
@@ -55,14 +57,26 @@ const getPost = async (req, res) => {
 };
 const getPosts = async (req, res) => {
     try {
-        const id = req.body.id
+        const cat = req.query.category
+        const { page = 1, limit = 10 } = req.query;
+        const skip = (page - 1) * limit;
+
         let posts;
-        if (id) {
-            posts = await Post.find({ _id: id })
-        } else {
-            posts = await Post.find({}).select("_id user slug image header date_publish")
-                .populate('user', 'username')
+        const filter = {};
+        if (cat) {
+            const category = await Category.findOne({ slug: cat });
+            if (!category) return res.status(404).json({ error: 'Kategori bulunamadı' });
+
+            filter.category = category._id
         }
+
+        posts = await Post.find(filter)
+            .populate('user', 'username')
+            .populate('category')
+            .skip(Number(skip))
+            .limit(Number(limit))
+
+        const totalCount = await Post.countDocuments(filter);
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message })
